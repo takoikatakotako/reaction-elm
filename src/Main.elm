@@ -1,18 +1,23 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, div, h1, img, text)
-import Html.Attributes exposing (src)
+import Html exposing (..)
+import Html.Attributes exposing (..)
 
 
 
 ---- MODEL ----
 
 
+baseUrl : String
+baseUrl =
+    "https://chemist.swiswiswift.com/"
+
+
 type alias Reaction =
-    { id : Int
-    , url : String
-    , text : String
+    { directoryName : String
+    , english : String
+    , thmbnailName : String
     }
 
 
@@ -22,9 +27,61 @@ type alias Model =
 
 initialModel : Model
 initialModel =
-    [ { id = 3
-      , url = "sss"
-      , text = "ssss"
+    [ { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
+      }
+    , { directoryName = "acyloin-condensation"
+      , english = "Acyloin Condensation"
+      , thmbnailName = "acyloin-condensation-general-formula-0.png"
       }
     ]
 
@@ -51,11 +108,18 @@ update msg model =
 ---- VIEW ----
 
 
+liComponent : Reaction -> Html msg
+liComponent reaction =
+    div []
+        [ h1 [] [ text reaction.english ]
+        , img [ src (baseUrl ++ reaction.directoryName ++ "/" ++ reaction.thmbnailName) ] []
+        ]
+
+
 view : Model -> Html Msg
 view model =
     div []
-        [ img [ src "/logo.svg" ] []
-        , h1 [] [ text "sdfs" ]
+        [ ul [] (model |> List.map liComponent)
         ]
 
 
