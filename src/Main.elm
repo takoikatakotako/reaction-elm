@@ -3,15 +3,31 @@ module Main exposing (..)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Http
+import Json.Decode exposing (Decoder, bool, int, list, string, succeed)
 
 
 
+-- import Json.Decode.Pipeline exposing (hardcoded, required)
 ---- MODEL ----
 
 
 baseUrl : String
 baseUrl =
     "https://chemist.swiswiswift.com/"
+
+
+personListDecoder : Decoder Reactions
+personListDecoder =
+    Json.Decode.list photoDecoder
+
+
+photoDecoder : Decoder Reaction
+photoDecoder =
+    Json.Decode.map3 Reaction
+        (Json.Decode.field "directoryName" Json.Decode.string)
+        (Json.Decode.field "english" Json.Decode.string)
+        (Json.Decode.field "thmbnailName" Json.Decode.string)
 
 
 type alias Reaction =
@@ -21,74 +37,37 @@ type alias Reaction =
     }
 
 
-type alias Model =
+
+-- type alias Model =
+--     List Reaction
+
+
+type alias Reactions =
     List Reaction
+
+
+type alias Model =
+    { reactions : Maybe Reactions
+    }
 
 
 initialModel : Model
 initialModel =
-    [ { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    , { directoryName = "acyloin-condensation"
-      , english = "Acyloin Condensation"
-      , thmbnailName = "acyloin-condensation-general-formula-0.png"
-      }
-    ]
+    { reactions = Nothing
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( initialModel, Cmd.none )
+    ( initialModel, fetchFeed )
+
+
+fetchFeed : Cmd Msg
+fetchFeed =
+    Http.get
+        { url = baseUrl ++ "reactions.json"
+        , expect = Http.expectJson LoadFeed personListDecoder
+        }
 
 
 
@@ -96,12 +75,19 @@ init =
 
 
 type Msg
-    = NoOp
+    = LoadFeed (Result Http.Error Reactions)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        LoadFeed (Ok reactions) ->
+            ( { model | reactions = Just reactions }
+            , Cmd.none
+            )
+
+        LoadFeed (Err _) ->
+            ( model, Cmd.none )
 
 
 
@@ -116,10 +102,26 @@ liComponent reaction =
         ]
 
 
+ulComponent : List Reaction -> Html msg
+ulComponent reactions =
+    ul [] (List.map liComponent reactions)
+
+
+viewFeed : Maybe Reactions -> Html Msg
+viewFeed maybeReactions =
+    case maybeReactions of
+        Just reactions ->
+            ulComponent reactions
+
+        Nothing ->
+            div [ class "loading-feed" ]
+                [ text "Loading Feed..." ]
+
+
 view : Model -> Html Msg
 view model =
     div []
-        [ ul [] (model |> List.map liComponent)
+        [ viewFeed model.reactions
         ]
 
 
