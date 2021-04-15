@@ -14,7 +14,7 @@ import Json.Decode exposing (Decoder, bool, int, list, string, succeed)
 
 baseUrl : String
 baseUrl =
-    "https://chemist.swiswiswift.com/"
+    "https://chemist.swiswiswift.com/resource/"
 
 
 personListDecoder : Decoder Reactions
@@ -98,7 +98,7 @@ liComponent : Reaction -> Html msg
 liComponent reaction =
     div []
         [ h1 [] [ text reaction.english ]
-        , img [ src (baseUrl ++ reaction.directoryName ++ "/" ++ reaction.thmbnailName) ] []
+        , img [ src (baseUrl ++ "images/" ++ reaction.directoryName ++ "/" ++ reaction.thmbnailName) ] []
         ]
 
 
