@@ -9,6 +9,7 @@ import Json.Decode exposing (Decoder, bool, int, list, string, succeed)
 import Routes
 import Url exposing (Url)
 import Url.Parser as Parser exposing (Parser)
+import XXX
 
 
 
@@ -60,14 +61,17 @@ viewContent page =
     case page of
         Home ->
             ( "Picshare"
-            , h1 [] [ text "Public Feed" ]
+            , XXX.view init
             )
 
         Reaction xxxx ->
-            ( "Reaction"
-            , h1 [] [ text xxxx ]
+            ( "XXX"
+            , XXX.view init
             )
 
+        -- ( "Reaction"
+        -- , XXX.view
+        -- )
         NotFound ->
             ( "Not Found"
             , div [ class "not-found" ]
