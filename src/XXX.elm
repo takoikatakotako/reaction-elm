@@ -10,6 +10,7 @@ import Http
 -- view : Model -> ( String, Html Msg )
 
 
-view model =
+view : String -> Html msg
+view xxxx =
     div [ class "XXX" ]
-        [ text "XXXX" ]
+        [ text xxxx ]
