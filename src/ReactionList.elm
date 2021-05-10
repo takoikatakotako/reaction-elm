@@ -44,7 +44,7 @@ type alias Reactions =
 
 type alias Model =
     { fetchStatus : FetchStatus
-    , reactions : Maybe Reactions
+    , reactions : Reactions
     }
 
 
@@ -57,20 +57,20 @@ type FetchStatus
 initialModel : Model
 initialModel =
     { fetchStatus = Doing
-    , reactions = Nothing
+    , reactions = []
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( initialModel, fetchFeed )
+    ( initialModel, fetchReactions )
 
 
-fetchFeed : Cmd Msg
-fetchFeed =
+fetchReactions : Cmd Msg
+fetchReactions =
     Http.get
         { url = baseUrl ++ "reactions.json"
-        , expect = Http.expectJson LoadFeed reactionListDecoder
+        , expect = Http.expectJson FetchReactions reactionListDecoder
         }
 
 
@@ -79,18 +79,20 @@ fetchFeed =
 
 
 type Msg
-    = LoadFeed (Result Http.Error Reactions)
+    = FetchReactions (Result Http.Error Reactions)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        LoadFeed (Ok reactions) ->
-            ( { model | reactions = Just reactions }
+        FetchReactions (Ok reactions) ->
+            ( { fetchStatus = Done
+              , reactions = reactions
+              }
             , Cmd.none
             )
 
-        LoadFeed (Err _) ->
+        FetchReactions (Err _) ->
             ( { model | fetchStatus = Error }
             , Cmd.none
             )
@@ -121,30 +123,8 @@ view model =
                 [ text "Loading Feed..." ]
 
         Done ->
-            case model.reactions of
-                Just reactions ->
-                    ulComponent reactions
-
-                Nothing ->
-                    div [ class "loading-feed" ]
-                        [ text "UnKnownError" ]
+            ulComponent model.reactions
 
         Error ->
             div [ class "Error" ]
                 [ text "Error..." ]
-
-
-
--- ---- PROGRAM ----
--- main : Program () Model Msg
--- main =
---     Browser.element
---         { view = view
---         , init = \_ -> init
---         , update = update
---         , subscriptions = always Sub.none
---         }
--- view2 : String -> Html msg
--- view2 xxxx =
---     div [ class "XXX" ]
---         [ text xxxx ]
