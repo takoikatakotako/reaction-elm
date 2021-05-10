@@ -4,6 +4,7 @@ import Browser exposing (Document, UrlRequest)
 import Browser.Navigation as Navigation
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Reaction
 import ReactionList
 import Routes
 import Url exposing (Url)
@@ -44,8 +45,8 @@ viewContent page =
 
         Reaction directoryName ->
             ( "Reaction"
-            , div [ class "Reaction" ]
-                [ h1 [] [ text ("Reaction " ++ directoryName) ] ]
+            , Reaction.view Reaction.initialModel
+                |> Html.map ReactionMsg
             )
 
         NotFound ->
@@ -70,6 +71,7 @@ type Msg
     = NewRoute (Maybe Routes.Route)
     | Visit UrlRequest
     | ReactionListMsg ReactionList.Msg
+    | ReactionMsg Reaction.Msg
 
 
 setNewPage : Maybe Routes.Route -> Model -> ( Model, Cmd Msg )
@@ -113,6 +115,15 @@ update msg model =
             in
             ( { model | page = ReactionList updatedReactionListModel }
             , Cmd.map ReactionListMsg reactionListCmd
+            )
+
+        ( ReactionMsg reactionMsg, Reaction reactionModel ) ->
+            let
+                ( updatedReactionModel, reactionCmd ) =
+                    Reaction.update reactionMsg reactionModel
+            in
+            ( { model | page = Reaction updatedReactionModel }
+            , Cmd.map ReactionMsg reactionCmd
             )
 
         _ ->
