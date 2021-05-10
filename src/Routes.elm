@@ -9,7 +9,7 @@ import Url.Parser as Parser exposing ((</>), Parser)
 
 
 type Route
-    = Home
+    = ReactionList
     | Reaction String
 
 
@@ -21,6 +21,6 @@ match url =
 routes : Parser (Route -> a) a
 routes =
     Parser.oneOf
-        [ Parser.map Home Parser.top
+        [ Parser.map ReactionList Parser.top
         , Parser.map Reaction (Parser.s "reaction" </> Parser.string)
         ]
