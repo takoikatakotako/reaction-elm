@@ -104,9 +104,11 @@ update msg model =
 
 liComponent : Reaction -> Html msg
 liComponent reaction =
-    div []
-        [ h1 [] [ text reaction.english ]
-        , img [ src (baseUrl ++ "images/" ++ reaction.directoryName ++ "/" ++ reaction.thmbnailName) ] []
+    a [ class "reaction", Routes.href (Routes.Reaction reaction.directoryName) ]
+        [ div []
+            [ h1 [] [ text reaction.english ]
+            , img [ src (baseUrl ++ "images/" ++ reaction.directoryName ++ "/" ++ reaction.thmbnailName) ] []
+            ]
         ]
 
 

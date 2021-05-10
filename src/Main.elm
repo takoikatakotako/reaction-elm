@@ -42,10 +42,10 @@ viewContent page =
                 |> Html.map ReactionListMsg
             )
 
-        Reaction string ->
+        Reaction directoryName ->
             ( "Reaction"
             , div [ class "Reaction" ]
-                [ h1 [] [ text "Reaction" ] ]
+                [ h1 [] [ text ("Reaction " ++ directoryName) ] ]
             )
 
         NotFound ->
@@ -84,8 +84,8 @@ setNewPage maybeRoute model =
             , Cmd.map ReactionListMsg reactionListCmd
             )
 
-        Just (Routes.Reaction xxxx) ->
-            ( { model | page = Reaction xxxx }, Cmd.none )
+        Just (Routes.Reaction directoryName) ->
+            ( { model | page = Reaction directoryName }, Cmd.none )
 
         Nothing ->
             ( { model | page = NotFound }, Cmd.none )
@@ -93,9 +93,27 @@ setNewPage maybeRoute model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        NewRoute maybeRoute ->
-            setNewPage maybeRoute model
+    case ( msg, model.page ) of
+        ( NewRoute maybeRoute, _ ) ->
+            let
+                ( updatedModel, cmd ) =
+                    setNewPage maybeRoute model
+            in
+            ( updatedModel
+            , Cmd.none
+            )
+
+        ( Visit (Browser.Internal url), _ ) ->
+            ( model, Navigation.pushUrl model.navigationKey (Url.toString url) )
+
+        ( ReactionListMsg reactionListMsg, ReactionList reactionListModel ) ->
+            let
+                ( updatedReactionListModel, reactionListCmd ) =
+                    ReactionList.update reactionListMsg reactionListModel
+            in
+            ( { model | page = ReactionList updatedReactionListModel }
+            , Cmd.map ReactionListMsg reactionListCmd
+            )
 
         _ ->
             ( model, Cmd.none )
